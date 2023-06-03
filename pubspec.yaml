@@ -1,4 +1,4 @@
-name: firebase_auth
+name: fb_auth
 description: A new Flutter project.
 publish_to: 'none'
 version: 0.1.0
@@ -11,6 +11,9 @@ dependencies:
   cloud_firestore: any
   equatable: ^2.0.5
   firebase_core: any
+  collection: any
+  firebase_auth: ^4.6.2
+
   
  
   flutter:
