@@ -12,8 +12,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text('Profile'),
+      body: Column(
+        children: [
+          Text('Profile'),
+        ],
       ),
     );
   }

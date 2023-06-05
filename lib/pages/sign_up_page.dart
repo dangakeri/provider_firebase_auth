@@ -12,8 +12,10 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text('Sign up'),
+      body: Column(
+        children: [
+          Text('Sign up'),
+        ],
       ),
     );
   }
