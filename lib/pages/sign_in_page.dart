@@ -26,6 +26,7 @@ class _SignInPageState extends State<SignInPage> {
     });
     final form = _formkey.currentState;
     if (form == null || !form.validate()) return;
+    form.save();
     print('email: $_email, password: $_password');
     try {
       await context
@@ -39,102 +40,108 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     final signInState = context.watch<SignInProvider>().state;
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Form(
-            key: _formkey,
-            autovalidateMode: _autovalidateMode,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                Image.asset(
-                  'assets/flutter_logo.png',
-                  width: 250,
-                  height: 250,
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  keyboardType: TextInputType.emailAddress,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Form(
+              key: _formkey,
+              autovalidateMode: _autovalidateMode,
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  const SizedBox(height: 30),
+                  Image.asset(
+                    'assets/flutter.png',
+                    width: 250,
+                    height: 250,
                   ),
-                  validator: (String? value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Email required';
-                    }
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      labelText: 'Email',
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                    validator: (String? value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Email required';
+                      }
 
-                    if (!isEmail(value.trim())) {
-                      return 'Enter a valid email';
-                    }
-                    return null;
-                  },
-                  onSaved: (String? value) {
-                    _email = value;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
+                      if (!isEmail(value.trim())) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+                    onSaved: (String? value) {
+                      _email = value;
+                    },
                   ),
-                  validator: (String? value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'password required';
-                    }
-                    if (value.trim().length < 6) {
-                      return 'Password must be at least 6 characters long';
-                    }
-                    return null;
-                  },
-                  onSaved: (String? value) {
-                    _password = value;
-                  },
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: signInState.signInStatus == SignInStatus.submitting
-                      ? null
-                      : submit,
-                  style: ElevatedButton.styleFrom(
-                    textStyle: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    validator: (String? value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'password required';
+                      }
+                      if (value.trim().length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    },
+                    onSaved: (String? value) {
+                      _password = value;
+                    },
                   ),
-                  child: Text(
-                    signInState.signInStatus == SignInStatus.submitting
-                        ? 'Loading...'
-                        : 'Sign in',
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: signInState.signInStatus == SignInStatus.submitting
-                      ? null
-                      : () {
-                          Navigator.pushNamed(context, SignUpPage.routeName);
-                        },
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(
-                      fontSize: 20,
-                      decoration: TextDecoration.underline,
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed:
+                        signInState.signInStatus == SignInStatus.submitting
+                            ? null
+                            : submit,
+                    style: ElevatedButton.styleFrom(
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    child: Text(
+                      signInState.signInStatus == SignInStatus.submitting
+                          ? 'Loading...'
+                          : 'Sign in',
                     ),
                   ),
-                  child: const Text('Not a member? Sign up'),
-                )
-              ],
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: signInState.signInStatus ==
+                            SignInStatus.submitting
+                        ? null
+                        : () {
+                            Navigator.pushNamed(context, SignUpPage.routeName);
+                          },
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                    child: const Text('Not a member? Sign up'),
+                  )
+                ],
+              ),
             ),
           ),
         ),
