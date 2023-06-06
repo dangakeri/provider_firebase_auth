@@ -1,8 +1,12 @@
+import 'package:fb_auth/models/custom_error.dart';
 import 'package:fb_auth/pages/sign_up_page.dart';
 import 'package:fb_auth/provider/signin/signin_provider.dart';
+import 'package:fb_auth/provider/signin/signin_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:validators/validators.dart';
+
+import '../utils/error_dialog.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -16,18 +20,25 @@ class _SignInPageState extends State<SignInPage> {
   final _formkey = GlobalKey<FormState>();
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
   String? _email, _password;
-  void submit() {
+  void submit() async {
     setState(() {
       _autovalidateMode = AutovalidateMode.always;
     });
     final form = _formkey.currentState;
     if (form == null || !form.validate()) return;
     print('email: $_email, password: $_password');
-    context.read<SignInProvider>().signIn(email: _email!, password: _password!);
+    try {
+      await context
+          .read<SignInProvider>()
+          .signIn(email: _email!, password: _password!);
+    } on CustomError catch (e) {
+      errorDialog(context, e);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final signInState = context.watch<SignInProvider>().state;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -92,7 +103,9 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: submit,
+                  onPressed: signInState.signInStatus == SignInStatus.submitting
+                      ? null
+                      : submit,
                   style: ElevatedButton.styleFrom(
                     textStyle: const TextStyle(
                       fontSize: 20,
@@ -100,13 +113,19 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 10),
                   ),
-                  child: const Text('Sign in'),
+                  child: Text(
+                    signInState.signInStatus == SignInStatus.submitting
+                        ? 'Loading...'
+                        : 'Sign in',
+                  ),
                 ),
                 const SizedBox(height: 10),
                 TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, SignUpPage.routeName);
-                  },
+                  onPressed: signInState.signInStatus == SignInStatus.submitting
+                      ? null
+                      : () {
+                          Navigator.pushNamed(context, SignUpPage.routeName);
+                        },
                   style: TextButton.styleFrom(
                     textStyle: const TextStyle(
                       fontSize: 20,
