@@ -12,7 +12,9 @@ import 'package:fb_auth/provider/auth/auth_provider.dart';
 import 'package:fb_auth/provider/signin/signin_provider.dart';
 import 'package:fb_auth/repositories/auth_repository.dart';
 
+import 'provider/profile/profile_provider.dart';
 import 'provider/sign_up/sign_up_provider.dart';
+import 'repositories/profile_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +33,11 @@ class MainApp extends StatelessWidget {
           create: (context) => AuthRepository(
             firebaseFirestore: FirebaseFirestore.instance,
             firebaseAuth: fbAuth.FirebaseAuth.instance,
+          ),
+        ),
+        Provider<ProfileRepository>(
+          create: (context) => ProfileRepository(
+            firebaseFirestore: FirebaseFirestore.instance,
           ),
         ),
         StreamProvider<fbAuth.User?>(
@@ -55,6 +62,11 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider<SignUpProvider>(
           create: (context) => SignUpProvider(
             authRepository: context.read<AuthRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (context) => ProfileProvider(
+            profileRepository: context.read<ProfileRepository>(),
           ),
         ),
       ],

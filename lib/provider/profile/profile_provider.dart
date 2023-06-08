@@ -1,44 +1,28 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:equatable/equatable.dart';
 import 'package:fb_auth/models/custom_error.dart';
+import 'package:flutter/material.dart';
+
+import 'package:fb_auth/provider/profile/profile_state.dart';
+import 'package:fb_auth/repositories/profile_repository.dart';
 
 import '../../models/user_model.dart';
 
-enum ProfileStatus {
-  initial,
-  loading,
-  loaded,
-  error,
-}
-
-class ProfileState extends Equatable {
-  final ProfileStatus profileStatus;
-  final User user;
-  final CustomError error;
-  ProfileState({
-    required this.profileStatus,
-    required this.user,
-    required this.error,
+class ProfileProvider with ChangeNotifier {
+  ProfileState _state = ProfileState.initial();
+  ProfileState get state => _state;
+  final ProfileRepository profileRepository;
+  ProfileProvider({
+    required this.profileRepository,
   });
-  factory ProfileState.initial() {
-    return ProfileState(
-        profileStatus: ProfileStatus.initial,
-        user: User.initialUser(),
-        error: const CustomError());
-  }
-  @override
-  List<Object> get props => [profileStatus, user, error];
-  @override
-  bool get stringify => true;
-  ProfileState copyWith({
-    ProfileStatus? profileStatus,
-    User? user,
-    CustomError? error,
-  }) {
-    return ProfileState(
-      profileStatus: profileStatus ?? this.profileStatus,
-      user: user ?? this.user,
-      error: error ?? this.error,
-    );
+  Future<void> getProfile({required String uid}) async {
+    _state = _state.copyWith(profileStatus: ProfileStatus.loading);
+    notifyListeners();
+    try {
+      // ignore: unused_local_variable
+      final User user = await profileRepository.getProfile(uid: uid);
+    } on CustomError catch (e) {
+      _state = _state.copyWith(profileStatus: ProfileStatus.error, error: e);
+      notifyListeners();
+    }
   }
 }
