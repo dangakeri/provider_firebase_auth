@@ -13,8 +13,11 @@ class ProfileRepository {
   Future<User> getProfile({required String uid}) async {
     try {
       final DocumentSnapshot userDoc = await userRef.doc(uid).get();
-      final User currentUser = User.fromDoc(userDoc);
-      return currentUser;
+      if (userDoc.exists) {
+        final User currentUser = User.fromDoc(userDoc);
+        return currentUser;
+      }
+      throw 'User not found';
     } on FirebaseException catch (e) {
       throw CustomError(
         code: e.code,
