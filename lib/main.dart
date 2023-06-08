@@ -1,4 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:fb_auth/pages/home_page.dart';
 import 'package:fb_auth/pages/sign_in_page.dart';
 import 'package:fb_auth/pages/sign_up_page.dart';
@@ -6,10 +11,8 @@ import 'package:fb_auth/pages/splash_page.dart';
 import 'package:fb_auth/provider/auth/auth_provider.dart';
 import 'package:fb_auth/provider/signin/signin_provider.dart';
 import 'package:fb_auth/repositories/auth_repository.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
+
+import 'provider/sign_up/sign_up_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +49,11 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SignInProvider>(
           create: (context) => SignInProvider(
+            authRepository: context.read<AuthRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<SignUpProvider>(
+          create: (context) => SignUpProvider(
             authRepository: context.read<AuthRepository>(),
           ),
         ),

@@ -17,7 +17,10 @@ class SignInProvider with ChangeNotifier {
     _state = _state.copyWith(signInStatus: SignInStatus.submitting);
     notifyListeners();
     try {
-      await authRepository.signin(email: email, password: password);
+      await authRepository.signin(
+        email: email,
+        password: password,
+      );
     } on CustomError catch (e) {
       _state = _state.copyWith(signInStatus: SignInStatus.error, error: e);
       notifyListeners();
